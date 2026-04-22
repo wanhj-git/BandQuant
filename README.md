@@ -1,530 +1,520 @@
-# 📖 简介
+# 📖 Introduction
 
-条带宝(BandQuant)是一个基于 Ant Design Pro 框架开发的 Western Blot 实验数据管理平台，旨在为生物科研人员提供完整的实验数据采集、处理、分析和可视化解决方案。
+BandQuant is a Western Blot experiment data management platform developed based on the Ant Design Pro framework. It aims to provide life science researchers with comprehensive solutions for experimental data collection, processing, analysis, and visualization.
 
-平台支持从样本管理、图像采集、灰度值测量到数据标准化计算和图表生成的完整实验流程，同时提供游客模式，方便未注册用户快速进行数据分析。
+The platform supports the complete experimental workflow from sample management, image acquisition, grayscale measurement to data normalization calculations and chart generation. It also offers a guest mode for quick data analysis without registration.
 
-## 核心能力
+## Core Features
 
-- 🧪 **完整实验流程管理**：向导式设计，引导完成从样本设置到结果输出的全流程
-- 📊 **专业图像分析**：集成多种图像处理工具，支持条带灰度值精确测量
-- 📈 **自动化数据计算**：一键完成内参标准化和干预对照计算
-- 🎨 **多样化可视化**：支持彩色/灰度主题，生成符合发表标准的图表
-- 🌍 **国际化支持**：完整的中英文切换功能
-- 👤 **游客快速体验**：无需注册即可使用条带分析功能
-
----
-
-# ✨ 功能特性
-
-## 实验管理
-
-| 功能 | 说明 |
-|------|------|
-| 多步骤向导 | 5个步骤引导完成完整实验流程 |
-| 样本批量管理 | 支持批量添加样本、分组管理 |
-| 对照组设置 | 自动识别和管理实验对照组 |
-| 目录树结构 | 支持多级目录组织实验数据 |
-| 最近编辑 | 快速访问最近编辑的实验 |
-
-## 图像处理
-
-| 功能 | 说明 |
-|------|------|
-| 多格式支持 | 支持 PNG、JPG、TIFF 等常见图像格式 |
-| 批量上传 | 支持多文件同时上传 |
-| 图像裁剪 | 精确裁剪感兴趣区域（ROI） |
-| 背景去噪 | 去除背景噪声干扰 |
-| 黑白反转 | 支持图像反色处理 |
-| AI自动框选 | 支持AI自动框选计算区域 |
-
-## 数据分析
-
-| 功能 | 说明 |
-|------|------|
-| 灰度值测量 | 测量条带的 IntDen、Area、Mean、Min、Max 值 |
-| 内参标准化 | 基于内参基因（如 GAPDH、β-actin）进行标准化 |
-| 干预对照计算 | 计算相对于对照组的表达变化 |
-| 多图表展示 | 独立图表 + 整合图表双视图 |
-| 内参对齐 | 指定参考样本，自动计算其余样本所需体积 |
-
-## 数据导出
-
-| 格式 | 说明 |
-|------|------|
-| PNG | 图表和拼贴图导出为 PNG 图像 |
-| XLSX | 数据表格导出为 XLSX 文件 |
-| TIFF | 原始图像支持 TIFF 格式 |
+- 🧪 **Complete Experimental Workflow**: Wizard-based design guiding you through the entire process from sample setup to result export
+- 📊 **Professional Image Analysis**: Integrated multiple image processing tools for precise band grayscale measurement
+- 📈 **Automated Data Calculation**: One-click completion of reference normalization and treatment control calculations
+- 🎨 **Diverse Visualization**: Supports color/grayscale themes, generates publication-ready charts
+- 🌍 **Internationalization**: Full Chinese and English language switching
+- 👤 **Quick Guest Access**: Use band analysis features without registration
 
 ---
 
-# 🛠 技术栈
+# ✨ Features
 
-## 前端框架
+## Experiment Management
 
-- **核心框架**：React 18.2.0
-- **构建工具**：UmiJS 4.1.0
-- **UI 组件库**：Ant Design 5.26.7
-- **页面组件**：Ant Design Pro Components 2.8.10
+| Feature | Description |
+|---------|-------------|
+| Multi-step Wizard | 5 steps guiding complete experimental workflow |
+| Batch Sample Management | Support batch adding samples and group management |
+| Control Group Setting | Auto-identify and manage experimental control groups |
+| Tree Directory Structure | Support multi-level directory organization of experimental data |
+| Recent Editing | Quick access to recently edited experiments |
 
-## 图像与图表
+## Image Processing
 
-- **画布处理**：Fabric.js 6.4.2
-- **图表库**：ECharts 5.6.0
-- **图像导出**：html2canvas
-- **TIFF 解析**：tiff.js
+| Feature | Description |
+|---------|-------------|
+| Multi-format Support | Support PNG, JPG, TIFF and other common image formats |
+| Batch Upload | Support simultaneous upload of multiple files |
+| Image Cropping | Precisely crop region of interest (ROI) |
+| Background Removal | Remove background noise interference |
+| Invert Colors | Support image color inversion |
+| AI Auto-framing | Support AI automatic framing of calculation areas |
 
-## 工具库
+## Data Analysis
 
-- **HTTP 请求**：Axios 1.7.7
-- **日期处理**：dayjs 1.11.10
-- **拖拽排序**：@dnd-kit/core
-- **Excel 处理**：xlsx 0.18.5
-- **加密**：jsencrypt
+| Feature | Description |
+|---------|-------------|
+| Grayscale Measurement | Measure IntDen, Area, Mean, Min, Max values of bands |
+| Reference Normalization | Normalize based on reference genes (e.g., GAPDH, β-actin) |
+| Treatment Control Calculation | Calculate expression changes relative to control group |
+| Multi-chart Display | Independent charts + integrated charts dual view |
+| Reference Alignment | Specify reference sample, auto-calculate volume needed for other samples |
 
-## 开发工具
+## Data Export
 
-- **类型检查**：TypeScript 4.9.5
-- **代码规范**：ESLint + Prettier
-- **单元测试**：Jest
-- **Mock 服务**：MockJS
+| Format | Description |
+|--------|-------------|
+| PNG | Export charts and collage images as PNG images |
+| XLSX | Export data tables as XLSX files |
+| TIFF | Raw image support for TIFF format |
 
 ---
 
-# 📁 项目结构
+# 🛠 Tech Stack
+
+## Frontend Framework
+
+- **Core Framework**: React 18.2.0
+- **Build Tool**: UmiJS 4.1.0
+- **UI Component Library**: Ant Design 5.26.7
+- **Page Components**: Ant Design Pro Components 2.8.10
+
+## Image & Charts
+
+- **Canvas Processing**: Fabric.js 6.4.2
+- **Chart Library**: ECharts 5.6.0
+- **Image Export**: html2canvas
+- **TIFF Parsing**: tiff.js
+
+## Utilities
+
+- **HTTP Client**: Axios 1.7.7
+- **Date Processing**: dayjs 1.11.10
+- **Drag & Drop Sorting**: @dnd-kit/core
+- **Excel Processing**: xlsx 0.18.5
+- **Encryption**: jsencrypt
+
+## Development Tools
+
+- **Type Checking**: TypeScript 4.9.5
+- **Code Standards**: ESLint + Prettier
+- **Unit Testing**: Jest
+- **Mock Service**: MockJS
+
+---
+
+# 📁 Project Structure
 
 ```
 Client_Codeup/
-├── config/                      # 配置文件目录
-│   ├── config.ts               # 主配置文件
-│   ├── defaultSettings.ts      # 默认布局设置
-│   ├── proxy.ts                # 代理配置
-│   └── routes.ts               # 路由配置
-├── mock/                       # Mock 数据目录
-├── public/                     # 静态资源
-│   ├── icons/                 # 应用图标
-│   └── scripts/               # 脚本文件
-├── src/                        # 源代码目录
-│   ├── components/            # 可复用组件
-│   │   ├── ExpeOverview/     # 实验概览组件
-│   │   ├── Footer/           # 页脚组件
-│   │   ├── HeaderDropdown/   # 头部下拉菜单
-│   │   ├── ImageEditor/      # 图像编辑器核心
-│   │   │   ├── CompositionEditor/    # 组合编辑
-│   │   │   ├── CroppingEditor/       # 裁剪编辑
-│   │   │   ├── MeasurementEditor/    # 测量编辑
-│   │   │   │   ├── ConvertToGrayscaleTool.tsx  # 灰度转换
-│   │   │   │   ├── InvertTool.tsx              # 反色工具
-│   │   │   │   ├── MeasureTool.tsx             # 测量工具
-│   │   │   │   ├── RemoveBackgroundTool.tsx    # 背景去噪
-│   │   │   │   └── MeasurementTable.tsx        # 测量表格
-│   │   │   ├── EditorCanvas.tsx       # 画布组件
-│   │   │   └── LogViewer.tsx          # 日志查看器
-│   │   └── RightContent/            # 右侧内容区
-│   ├── constants/              # 常量定义
-│   │   └── chartSettings.ts    # 图表配置常量
-│   ├── layouts/                # 布局组件
-│   │   └── BasicLayout.tsx     # 基础布局
-│   ├── locales/               # 国际化资源
-│   │   ├── en-US/             # 英文资源
-│   │   └── zh-CN/             # 中文资源
-│   ├── models/                # 全局状态管理
-│   │   ├── CategoryExpeDataModel.ts  # 分类实验数据模型
-│   │   ├── CategoryModel.ts          # 分类模型
-│   │   ├── ExpeDataModel.ts          # 实验数据模型
-│   │   └── toolModel.ts             # 工具模型
-│   ├── pages/                  # 页面组件
-│   │   ├── main/              # 主页面
-│   │   ├── newExperiment/     # 新建实验页面
-│   │   │   ├── NewExpeSample/         # 样本管理
-│   │   │   ├── NewExpeParameter/      # 参数设置
-│   │   │   ├── NewExpeOriginalData/   # 原始数据
-│   │   │   ├── NewExpeDataProcess/    # 数据处理
-│   │   │   ├── NewExpeCalculateDataTable/  # 计算表格
-│   │   │   └── NewExpeResult/         # 实验结果
-│   │   ├── GuestMode/         # 游客模式
-│   │   ├── SingleExpe/        # 单个实验详情
-│   │   └── user/              # 用户相关页面
-│   │       ├── login/         # 登录页
-│   │       └── register/      # 注册页
-│   ├── services/              # API 服务层
-│   │   └── labnote/           # 实验笔记服务
-│   │       └── mainLogic.ts   # 核心业务逻辑
-│   ├── types/                 # TypeScript 类型定义
-│   │   └── expeDataInterface.ts  # 实验数据类型
-│   ├── utils/                 # 工具函数
-│   │   ├── exportToExcel.ts   # Excel 导出
-│   │   └── utils.ts           # 通用工具
-│   ├── app.tsx                # 应用入口
-│   └── global.tsx             # 全局配置
-├── tests/                     # 测试文件
-├── experimentTypes.json      # 实验类型配置
-├── package.json              # 项目依赖
-└── tsconfig.json             # TypeScript 配置
+├── config/                      # Configuration directory
+│   ├── config.ts               # Main configuration file
+│   ├── defaultSettings.ts      # Default layout settings
+│   ├── proxy.ts                # Proxy configuration
+│   └── routes.ts               # Route configuration
+├── mock/                       # Mock data directory
+├── public/                     # Static resources
+│   ├── icons/                 # Application icons
+│   └── scripts/               # Script files
+├── src/                        # Source code directory
+│   ├── components/            # Reusable components
+│   │   ├── ExpeOverview/     # Experiment overview component
+│   │   ├── Footer/           # Footer component
+│   │   ├── HeaderDropdown/   # Header dropdown menu
+│   │   ├── ImageEditor/      # Image editor core
+│   │   │   ├── CompositionEditor/    # Composition editor
+│   │   │   ├── CroppingEditor/       # Cropping editor
+│   │   │   ├── MeasurementEditor/    # Measurement editor
+│   │   │   │   ├── ConvertToGrayscaleTool.tsx  # Grayscale conversion
+│   │   │   │   ├── InvertTool.tsx              # Invert tool
+│   │   │   │   ├── MeasureTool.tsx             # Measure tool
+│   │   │   │   ├── RemoveBackgroundTool.tsx    # Background removal
+│   │   │   │   └── MeasurementTable.tsx        # Measurement table
+│   │   │   ├── EditorCanvas.tsx       # Canvas component
+│   │   │   └── LogViewer.tsx          # Log viewer
+│   │   └── RightContent/            # Right content area
+│   ├── constants/              # Constants definition
+│   │   └── chartSettings.ts    # Chart configuration constants
+│   ├── layouts/                # Layout components
+│   │   └── BasicLayout.tsx     # Basic layout
+│   ├── locales/               # Internationalization resources
+│   │   ├── en-US/             # English resources
+│   │   └── zh-CN/             # Chinese resources
+│   ├── models/                # Global state management
+│   │   ├── CategoryExpeDataModel.ts  # Category experiment data model
+│   │   ├── CategoryModel.ts          # Category model
+│   │   ├── ExpeDataModel.ts          # Experiment data model
+│   │   └── toolModel.ts             # Tool model
+│   ├── pages/                  # Page components
+│   │   ├── main/              # Main page
+│   │   ├── newExperiment/     # New experiment page
+│   │   │   ├── NewExpeSample/         # Sample management
+│   │   │   ├── NewExpeParameter/      # Parameter settings
+│   │   │   ├── NewExpeOriginalData/   # Raw data
+│   │   │   ├── NewExpeDataProcess/    # Data processing
+│   │   │   ├── NewExpeCalculateDataTable/  # Calculate table
+│   │   │   └── NewExpeResult/         # Experiment result
+│   │   ├── GuestMode/         # Guest mode
+│   │   ├── SingleExpe/        # Single experiment details
+│   │   └── user/              # User-related pages
+│   │       ├── login/         # Login page
+│   │       └── register/      # Register page
+│   ├── services/              # API service layer
+│   │   └── labnote/           # Lab note service
+│   │       └── mainLogic.ts   # Core business logic
+│   ├── types/                 # TypeScript type definitions
+│   │   └── expeDataInterface.ts  # Experiment data types
+│   ├── utils/                 # Utility functions
+│   │   ├── exportToExcel.ts   # Excel export
+│   │   └── utils.ts           # Common utilities
+│   ├── app.tsx                # Application entry
+│   └── global.tsx             # Global configuration
+├── tests/                     # Test files
+├── experimentTypes.json      # Experiment types configuration
+├── package.json              # Project dependencies
+└── tsconfig.json             # TypeScript configuration
 ```
 
 
-# 📖 使用指南
+# 📖 User Guide
 
-## 1. 用户登录与注册
+## 1. User Login and Registration
 
-### 1.1 用户注册
-访问注册页面：https://www.tiaodaibao.com/user/register
+### 1.1 User Registration
+Visit registration page: https://www.tiaodaibao.com/user/register
 
-#### 1.1.1 用户名密码注册
+#### 1.1.1 Username & Password Registration
 
-| 字段 | 说明 | 必填 |
-|------|------|------|
-| 用户名 | 登录账号 | ✅ |
-| 密码 | 账户密码 | ✅ |
-| 邮箱 | 接收验证邮件 | ❌ |
-| 手机号 | 联系方式 | ❌ |
+| Field | Description | Required |
+|-------|-------------|----------|
+| Username | Login account | ✅ |
+| Password | Account password | ✅ |
+| Email | Receive verification email | ❌ |
+| Phone Number | Contact information | ❌ |
 
-#### 1.1.2 邮箱注册
+#### 1.1.2 Email Registration
 
-| 字段 | 说明 | 必填 |
-|------|------|------|
-| 邮箱地址 | 用于注册的邮箱地址 | ✅ |
-| 邮箱验证码 | 注册邮箱收到的验证码 | ✅ |
-| 密码 | 账户密码 | ✅ |
-| 确认密码 | 再次确认密码 | ✅ |
+| Field | Description | Required |
+|-------|-------------|----------|
+| Email Address | Email address for registration | ✅ |
+| Email Verification Code | Verification code received in email | ✅ |
+| Password | Account password | ✅ |
+| Confirm Password | Re-enter password | ✅ |
 
-### 1.2 用户登录
+### 1.2 User Login
 
-使用注册的用户名和密码或者邮箱登录系统。登录后可访问完整功能，包括：
+Log in using your registered username and password or email. After login, you can access full features:
 
-- 创建和管理实验
-- 上传和处理图像
-- 导出分析结果
-- 目录结构管理
+- Create and manage experiments
+- Upload and process images
+- Export analysis results
+- Directory structure management
 
-### 1.3 游客模式
+### 1.3 Guest Mode
 
-点击登录页面的「免登录极速版」按钮，无需注册即可使用全部分析功能。游客模式下：
+Click the "Quick Version Without Login" button on the login page to use all analysis features without registration. In guest mode:
 
-- 所有数据存储在浏览器本地
-- 关闭浏览器后数据不会被保留
-- 适合快速验证或单次分析
+- All data is stored locally in the browser
+- Data will not be retained after closing the browser
+- Suitable for quick verification or single analysis
 
-## 2. 创建新实验
+## 2. Create New Experiment
 
-### 2.1 访问入口
+### 2.1 Access
 
-登录后点击主页面左上方的「新建实验」按钮或者右键单击左侧目录树，选择「新建实验」，点击「新建实验」按钮新建的实验。默认保存在根目录下
+After logging in, click the "New Experiment" button in the upper left of the main page, or right-click on the left directory tree and select "New Experiment". Experiments are saved in the root directory by default.
 
+### 2.2 Experiment Wizard Flow
 
-### 2.2 实验向导流程
-
-系统采用 5 步骤向导设计：
+The system uses a 5-step wizard design:
 
 ```
 ┌─────────────┐
-│  Step 1     │ ← 基本信息（名称、目的、类型）
-│  基本信息   │
+│  Step 1     │ ← Basic Information (name, purpose, type)
+│  Basic Info │
 └──────┬──────┘
        ↓
 ┌─────────────┐
-│  Step 2     │ ← 样本设置（添加样本、设置对照）
-│  样本设置   │
+│  Step 2     │ ← Sample Setup (add samples, set controls)
+│  Sample     │
 └──────┬──────┘
        ↓
 ┌─────────────┐
-│  Step 3     │ ← 原始数据（上传 WB 图像）
-│  原始数据   │
+│  Step 3     │ ← Raw Data (upload WB images)
+│  Raw Data   │
 └──────┬──────┘
        ↓
 ┌─────────────┐
-│  Step 4     │ ← 数据处理（条带测量、计算）
-│  数据处理   │
+│  Step 4     │ ← Data Processing (band measurement, calculation)
+│  Processing  │
 └──────┬──────┘
        ↓
 ┌─────────────┐
-│  Step 5     │ ← 实验结果（查看图表、导出）
-│  实验结果   │
+│  Step 5     │ ← Experiment Results (view charts, export)
+│  Results    │
 └─────────────┘
 ```
 
 
-## 3. 样本管理（Step 2）
+## 3. Sample Management (Step 2)
 
-### 3.1 添加样本
+### 3.1 Add Samples
 
-点击表格下方的「+ 添加一行数据」按钮或使用批量添加功能：
+Click the "+ Add Row" button at the bottom of the table or use the batch add feature:
 
-| 操作 | 说明 |
-|------|------|
-| 单个添加 | 逐个添加样本信息 |
-| 批量添加 | 设置数量后一次性添加多条 |
+| Operation | Description |
+|-----------|-------------|
+| Single Add | Add sample information one by one |
+| Batch Add | Set quantity and add multiple at once |
 
+### 3.2 Control Group Setting
 
-### 3.2 对照组设置
+- **Important**: Each experiment must have **exactly one** control group
+- The system automatically marks the first sample as the control group
+- You can toggle other samples as the control group via the switch
+- Cannot proceed to the next step if no control group is set or multiple control groups are set
 
-- **重要**：每个实验必须设置**恰好一个**对照组
-- 系统会自动将第一个样本标记为对照组
-- 可通过开关切换其他样本为对照组
-- 未设置或设置多个对照组时无法进入下一步
+### 3.4 Sample Grouping
 
-### 3.4 样本分组
+Support grouping samples for easier data analysis:
 
-支持对样本进行分组管理，便于后续数据分析：
-
-- 同一分组的样本会在一起展示
-- 分组信息会保留在实验记录中
-- 支持跨组比较分析
-
----
-
-## 4. 原始数据管理（Step 3）
-
-### 4.1 上传图像
-
-点击虚线框上传 Western Blot 图像文件：
-
-| 支持格式 | 说明 |
-|---------|------|
-| PNG | 便携式网络图形 |
-| JPG/JPEG | 联合图像专家组 |
-| TIFF/TIF | 标签图像文件格式（支持多页） |
-
-### 4.2 批量上传
-
-支持同时选择多个图像文件：
-
-1. 点击上传区域
-2. 在文件选择对话框中按住 Ctrl/Cmd 多选
-3. 点击确认上传
-
-### 4.3 图像裁剪
-
-上传后如果需要裁剪：
-
-1. 点击操作列的「裁剪」按钮
-2. 在裁剪编辑器中拖拽选择区域
-3. 点击「确认」保存裁剪结果
-
-### 4.4 标记内参
-
-在图像列表中：
-
-| 操作 | 说明 |
-|------|------|
-| 开启内参开关 | 将该基因标记为内参（如 GAPDH、β-actin） |
-| 基因名称 | 识别文件名或手动编辑 |
-
-**重要**：内参用于后续数据标准化计算，务必正确标记。
+- Samples in the same group are displayed together
+- Group information is preserved in the experiment record
+- Support cross-group comparative analysis
 
 ---
 
-## 5. 数据处理（Step 4）
+## 4. Raw Data Management (Step 3)
 
-### 5.1 灰度值测量
+### 4.1 Upload Images
 
-点击操作列的「处理」按钮进入测量编辑器：
+Click the dashed border area to upload Western Blot image files:
 
-**工具面板说明：**
+| Supported Formats | Description |
+|-------------------|-------------|
+| PNG | Portable Network Graphics |
+| JPG/JPEG | Joint Photographic Experts Group |
+| TIFF/TIF | Tagged Image File Format (multi-page support) |
 
-| 工具 | 功能 | 使用场景 |
-|------|------|---------|
-| 背景去噪 | 去除背景噪声 | 条带背景不均匀时 |
-| 黑白反转 | 将图像颜色反转 | 原图颜色与预期相反时 |
-| 测量工具 | 测量条带灰度值 | 提取条带信号强度 |
+### 4.2 Batch Upload
 
-**测量流程：**
+Support uploading multiple image files simultaneously:
 
-1. **预处理图像**（如需要）
-   - 使用背景去噪、图像反色等工具预先处理图像
+1. Click the upload area
+2. Hold Ctrl/Cmd to select multiple files in the file dialog
+3. Click confirm to upload
 
-2. **绘制测量矩形**
-   - 在图像上拖拽绘制矩形框
-   - 每个矩形框对应一个样本孔道
-   - 矩形数量应与样本数量一致
-   - 也可点击「自动框选」按钮，让AI自动识别矩形框
+### 4.3 Image Cropping
 
-3. **提取数据**
-   - 点击「计算数值」按钮
-   - 系统计算并显示测量结果
+If cropping is needed after upload:
 
-4. **确认返回**
-   - 查看 IntDen、Area、Mean、Min、Max 等数值
-   - 点击「返回」保存数据
+1. Click the "Crop" button in the operation column
+2. Drag to select the area in the crop editor
+3. Click "Confirm" to save the crop result
 
-### 5.2 数据测量参数
+### 4.4 Mark Reference Genes
 
-| 参数 | 说明 | 单位 |
-|------|------|------|
-| IntDen | 积分光密度值，表示条带总强度 | - |
-| Area | 条带覆盖面积 | pixels |
-| Mean | 条带平均灰度值 | - |
-| Min | 条带最小灰度值 | - |
-| Max | 条带最大灰度值 | - |
+In the image list:
 
-### 5.3 自动计算
+| Operation | Description |
+|-----------|-------------|
+| Enable Reference Switch | Mark this gene as a reference (e.g., GAPDH, β-actin) |
+| Gene Name | Recognize from filename or manually edit |
 
-当内参处理完成后，点击「一键计算」按钮：
-
-| 计算步骤 | 说明 |
-|---------|------|
-| 内参标准化 | sample_value / ref_gene_value |
-| 干预对照计算 | normalized_value / control_value |
-
-### 5.4 数据导出
-- 所有图像处理完成之后，数据会被处理成「信号强度」「内参标化」「最终结果」三张表格。
-- 点击表格右上方的「导出」按钮，可导出为 xlsx 格式文件。
-
-### 5.5 内参对齐
-- 选择一个参照样本，系统会自动对齐其他样本的体积
+**Important**: References are used for subsequent data normalization calculations, make sure to mark them correctly.
 
 ---
 
-## 6. 实验结果（Step 5）
+## 5. Data Processing (Step 4)
 
-### 6.1 数据视图切换
+### 5.1 Grayscale Measurement
 
-支持三种数据视图：
+Click the "Process" button in the operation column to enter the measurement editor:
 
-| 视图 | 说明 |
-|------|------|
-| 信号强度 | 显示条带的原始灰度值 |
-| 内参标化 | 显示内参标准化后的数值 |
-| 最终结果 | 显示相对于对照组的表达变化 |
+**Tool Panel Description:**
 
-### 6.2 图表主题
+| Tool | Function | Use Case |
+|------|----------|----------|
+| Background Removal | Remove background noise | When band background is uneven |
+| Invert Colors | Invert image colors | When original colors are opposite to expected |
+| Measure Tool | Measure band grayscale values | Extract band signal intensity |
 
-| 主题 | 说明 | 适用场景 |
-|------|------|---------|
-| 彩色 | 使用多种颜色区分样本 | 演示和一般报告 |
-| 灰度 | 使用灰度色阶区分样本 | 发表论文 |
+**Measurement Process:**
 
-### 6.3 条带可视化
+1. **Preprocess Image** (if needed)
+   - Use tools like background removal, color inversion to preprocess the image
 
-在页面下方的「数据整合」区域：
+2. **Draw Measurement Rectangles**
+   - Drag on the image to draw rectangle boxes
+   - Each rectangle box corresponds to one sample lane
+   - The number of rectangles should match the number of samples
+   - You can also click "Auto-framing" button to let AI automatically identify rectangles
 
-| 功能 | 说明 |
-|------|------|
-| 拖拽排序 | 拖动条带调整显示顺序 |
-| 参数调节 | 调整字体、间距等参数 |
+3. **Extract Data**
+   - Click the "Calculate Values" button
+   - System calculates and displays measurement results
 
-**可调节参数：**
+4. **Confirm and Return**
+   - Review IntDen, Area, Mean, Min, Max values
+   - Click "Return" to save data
 
-| 参数 | 说明 | 范围 |
-|------|------|------|
-| 基因字体大小 | 条带名称的显示字号 | 12-32px |
-| 图像间距 | 条带图像之间的间距 | -30~50px |
-| 样本字体大小 | 样本标签的显示字号 | 10-24px |
-| 样本间距 | 样本标签之间的间距 | 20-120px |
-| 标签偏移 | 样本标签的水平偏移 | 0-80px |
+### 5.2 Data Measurement Parameters
 
-### 6.4 导出功能
+| Parameter | Description | Unit |
+|-----------|-------------|------|
+| IntDen | Integrated optical density value, representing total band intensity | - |
+| Area | Band coverage area | pixels |
+| Mean | Band average grayscale value | - |
+| Min | Band minimum grayscale value | - |
+| Max | Band maximum grayscale value | - |
 
-| 导出类型 | 操作 | 格式 |
-|---------|------|------|
-| 图表导出 | 点击图表右上角保存按钮 | PNG |
-| 拼贴图导出 | 点击「保存拼图图片」按钮 | PNG |
+### 5.3 Auto Calculation
 
+When reference processing is complete, click the "One-Click Calculate" button:
 
----
+| Calculation Step | Description |
+|------------------|-------------|
+| Reference Normalization | sample_value / ref_gene_value |
+| Treatment Control | normalized_value / control_value |
 
-# 📊 参数说明
+### 5.4 Data Export
+- After all image processing is complete, data will be processed into three tables: "Signal Intensity", "Reference Normalized", and "Final Results".
+- Click the "Export" button in the upper right corner of the table to export as xlsx format.
 
-## 样本参数
-
-| 参数名 | 类型 | 说明 | 默认值 |
-|--------|------|------|--------|
-| isControl | boolean | 是否为对照组样本 | false |
-| content | string | 样本名称/编号 | 空 |
-| samplegroup | string | 样本所属分组 | 空 |
-| volume | number | 上样体积 (μL) | 空 |
-| well | number | 孔位编号 | 自动 |
-
-## 图像处理参数
-
-| 参数名 | 类型 | 说明 |
-|--------|------|------|
-| imageUrl | string | 图像的 DataURL 或 URL |
-| geneName | string | 对应基因名称 |
-| isRef | boolean | 是否为内参基因 |
+### 5.5 Reference Alignment
+- Select a reference sample, and the system will automatically align the volumes of other samples
 
 ---
 
-# 🔌 API 接口
+## 6. Experiment Results (Step 5)
 
-## 实验管理
+### 6.1 Data View Switching
 
-| 接口 | 方法 | 说明 |
-|------|------|------|
-| `/api/create_experiment` | POST | 创建新实验 |
-| `/api/save_experiment` | POST | 保存实验数据 |
-| `/api/rename_experiment` | POST | 重命名实验 |
-| `/api/delete_experiment` | POST | 删除实验 |
-| `/api/move_experiment` | POST | 移动实验 |
+Support three data views:
 
-## 目录管理
+| View | Description |
+|------|-------------|
+| Signal Intensity | Shows raw grayscale values of bands |
+| Reference Normalized | Shows reference-normalized values |
+| Final Results | Shows expression changes relative to control group |
 
-| 接口 | 方法 | 说明 |
-|------|------|------|
-| `/api/create_folder` | POST | 创建目录 |
-| `/api/rename_folder` | POST | 重命名目录 |
-| `/api/delete_folder` | POST | 删除目录 |
-| `/api/move_folder` | POST | 移动目录 |
+### 6.2 Chart Theme
 
-## 用户相关
+| Theme | Description | Applicable Scenario |
+|-------|-------------|---------------------|
+| Color | Use multiple colors to distinguish samples | Presentations and general reports |
+| Grayscale | Use grayscale scale to distinguish samples | Publication |
 
-| 接口 | 方法 | 说明 |
-|------|------|------|
-| `/api/register` | POST | 用户注册 |
-| `/api/send-email-code` | POST | 发送邮箱验证码 |
-| `/api/save_settings` | POST | 保存用户设置 |
+### 6.3 Band Visualization
 
-## 数据查询
+In the "Data Integration" area at the bottom of the page:
 
-| 接口 | 方法 | 说明 |
-|------|------|------|
-| `/api/category_list` | GET | 查询用户的目录结构及其包含的实验 |
-| `/api/experiments_list` | GET | 分页查询某个Folder下的所有实验数据 |
-| `/api/one_experiment/${param0}` | GET | 查询实验数据 通过实验ID返回完整的实验数据 |
-| `/api/experiments/recent` | GET |  查询用户最近编辑的6个实验 |
+| Feature | Description |
+|---------|-------------|
+| Drag to Sort | Drag bands to adjust display order |
+| Parameter Adjustment | Adjust font, spacing and other parameters |
 
+**Adjustable Parameters:**
 
+| Parameter | Description | Range |
+|-----------|-------------|-------|
+| Gene Font Size | Display font size of band names | 12-32px |
+| Image Spacing | Spacing between band images | -30~50px |
+| Sample Font Size | Display font size of sample labels | 10-24px |
+| Sample Spacing | Spacing between sample labels | 20-120px |
+| Label Offset | Horizontal offset of sample labels | 0-80px |
 
----
+### 6.4 Export Functions
 
-# ❓ 常见问题
-
-## Q1: 上传的 TIFF 文件无法显示？
-
-**A**: 请确保 TIFF 文件格式正确，部分扫描仪生成的 TIFF 文件可能包含特殊编码。如遇问题，请先将 TIFF 转换为 PNG 格式后再上传。
-
-## Q2: 测量时矩形框位置不准确？
-
-**A**: 在已有的基础上，可选中单个矩形框调整位置。
-
-## Q3: 内参标准化计算失败？
-
-**A**: 请确认以下条件：
-1. 已正确标记内参基因
-2. 内参图像已处理并提取数据
-3. 样本数据完整无缺失
-
-
-
-## Q4: 如何修改语言为英文？
-
-**A**: 点击页面右上角的语言切换按钮，即可在中英文之间切换。
+| Export Type | Operation | Format |
+|-------------|-----------|--------|
+| Chart Export | Click save button in the upper right corner of the chart | PNG |
+| Collage Export | Click "Save Collage Image" button | PNG |
 
 ---
 
-# 📄 许可证
+# 📊 Parameter Description
 
-本项目基于 MIT 许可证开源。
+## Sample Parameters
+
+| Parameter | Type | Description | Default |
+|-----------|------|-------------|---------|
+| isControl | boolean | Whether this is a control group sample | false |
+| content | string | Sample name/number | empty |
+| samplegroup | string | Sample group | empty |
+| volume | number | Loading volume (μL) | empty |
+| well | number | Well position number | auto |
+
+## Image Processing Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| imageUrl | string | Image DataURL or URL |
+| geneName | string | Corresponding gene name |
+| isRef | boolean | Whether it is a reference gene |
 
 ---
 
-# 🙏 致谢
+# 🔌 API Interfaces
 
-- [Ant Design Pro](https://pro.ant.design) - 企业级中台前端/设计解决方案
-- [UmiJS](https://umijs.org/) - 可扩展的企业级前端应用框架
-- [ECharts](https://echarts.apache.org/) - 数据可视化图表库
-- [Fabric.js](http://fabricjs.com/) - 灵活强大的 Canvas 库
+## Experiment Management
+
+| Interface | Method | Description |
+|-----------|--------|-------------|
+| `/api/create_experiment` | POST | Create new experiment |
+| `/api/save_experiment` | POST | Save experiment data |
+| `/api/rename_experiment` | POST | Rename experiment |
+| `/api/delete_experiment` | POST | Delete experiment |
+| `/api/move_experiment` | POST | Move experiment |
+
+## Directory Management
+
+| Interface | Method | Description |
+|-----------|--------|-------------|
+| `/api/create_folder` | POST | Create directory |
+| `/api/rename_folder` | POST | Rename directory |
+| `/api/delete_folder` | POST | Delete directory |
+| `/api/move_folder` | POST | Move directory |
+
+## User Related
+
+| Interface | Method | Description |
+|-----------|--------|-------------|
+| `/api/register` | POST | User registration |
+| `/api/send-email-code` | POST | Send email verification code |
+| `/api/save_settings` | POST | Save user settings |
+
+## Data Query
+
+| Interface | Method | Description |
+|-----------|--------|-------------|
+| `/api/category_list` | GET | Query user's directory structure and included experiments |
+| `/api/experiments_list` | GET | Paginated query of all experiment data under a folder |
+| `/api/one_experiment/${param0}` | GET | Query experiment data, return complete experiment data by ID |
+| `/api/experiments/recent` | GET | Query 6 most recently edited experiments |
 
 ---
 
+# ❓ FAQ
+
+## Q1: Uploaded TIFF files cannot be displayed?
+
+**A**: Please ensure the TIFF file format is correct. Some TIFF files generated by scanners may contain special encoding. If you encounter problems, please convert TIFF to PNG format before uploading.
+
+## Q2: Rectangle position is inaccurate during measurement?
+
+**A**: On the existing basis, you can select a single rectangle box to adjust its position.
+
+## Q3: Reference normalization calculation failed?
+
+**A**: Please confirm the following conditions:
+1. Reference genes are correctly marked
+2. Reference images are processed and data is extracted
+3. Sample data is complete without missing values
+
+## Q4: How to change language to Chinese?
+
+**A**: Click the language switch button in the upper right corner of the page to switch between Chinese and English.
+
+---
+
+# 📄 License
+
+This project is open source under the MIT License.
+
+---
+
+# 🙏 Acknowledgments
+
+- [Ant Design Pro](https://pro.ant.design) - Enterprise-level middle platform frontend/design solution
+- [UmiJS](https://umijs.org/) - Scalable enterprise-level frontend application framework
+- [ECharts](https://echarts.apache.org/) - Data visualization chart library
+- [Fabric.js](http://fabricjs.com/) - Flexible and powerful Canvas library
