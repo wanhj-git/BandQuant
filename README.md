@@ -21,7 +21,7 @@ The platform supports the complete experimental workflow from sample management,
 
 | Feature | Description |
 |---------|-------------|
-| Multi-step Wizard | 5 steps guiding complete experimental workflow |
+| Multi-step Wizard | 4 steps guiding complete experimental workflow |
 | Batch Sample Management | Support batch adding samples and group management |
 | Control Group Setting | Auto-identify and manage experimental control groups |
 | Tree Directory Structure | Support multi-level directory organization of experimental data |
@@ -214,37 +214,32 @@ After logging in, click the "New Experiment" button in the upper left of the mai
 
 ### 2.2 Experiment Wizard Flow
 
-The system uses a 5-step wizard design:
+The system uses a 4-step wizard design:
 
 ```
 ┌─────────────┐
-│  Step 1     │ ← Basic Information (name, purpose, type)
-│  Basic Info │
+│  Step 1     │ ← Experiment Setup (basic info + sample setup)
+│  Setup      │
 └──────┬──────┘
        ↓
 ┌─────────────┐
-│  Step 2     │ ← Sample Setup (add samples, set controls)
-│  Sample     │
-└──────┬──────┘
-       ↓
-┌─────────────┐
-│  Step 3     │ ← Raw Data (upload WB images)
+│  Step 2     │ ← Raw Data (upload WB images)
 │  Raw Data   │
 └──────┬──────┘
        ↓
 ┌─────────────┐
-│  Step 4     │ ← Data Processing (band measurement, calculation)
-│  Processing  │
+│  Step 3     │ ← Data Processing (band measurement, calculation)
+│  Processing │
 └──────┬──────┘
        ↓
 ┌─────────────┐
-│  Step 5     │ ← Experiment Results (view charts, export)
+│  Step 4     │ ← Experiment Results (view charts, export)
 │  Results    │
 └─────────────┘
 ```
 
 
-## 3. Sample Management (Step 2)
+## 3. Sample Management (Step 1)
 
 ### 3.1 Add Samples
 
@@ -272,7 +267,7 @@ Support grouping samples for easier data analysis:
 
 ---
 
-## 4. Raw Data Management (Step 3)
+## 4. Raw Data Management (Step 2)
 
 ### 4.1 Upload Images
 
@@ -313,7 +308,7 @@ In the image list:
 
 ---
 
-## 5. Data Processing (Step 4)
+## 5. Data Processing (Step 3)
 
 ### 5.1 Grayscale Measurement
 
@@ -374,7 +369,7 @@ When reference processing is complete, click the "One-Click Calculate" button:
 
 ---
 
-## 6. Experiment Results (Step 5)
+## 6. Experiment Results (Step 4)
 
 ### 6.1 Data View Switching
 
