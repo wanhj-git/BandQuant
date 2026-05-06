@@ -6,9 +6,9 @@ The platform supports the complete experimental workflow from sample management,
 
 ## Core Features
 
-- 🧪 **Complete Experimental Workflow**: Wizard-based design guiding you through the entire process from sample setup to result export
-- 📊 **Professional Image Analysis**: Integrated multiple image processing tools for precise band grayscale measurement
-- 📈 **Automated Data Calculation**: One-click completion of reference normalization and treatment control calculations
+- 🧪 **Complete Experimental Workflow**: Left-right split layout, manage samples and data on the left, view results and charts in real-time on the right
+- 📊 **Professional Image Analysis**: Integrated multiple image processing tools including cropping, background removal, and inversion for precise band grayscale measurement
+- 📈 **Automated Data Calculation**: Real-time auto-calculation of reference normalization and treatment control calculations
 - 🎨 **Diverse Visualization**: Supports color/grayscale themes, generates publication-ready charts
 - 🌍 **Internationalization**: Full Chinese and English language switching
 - 👤 **Quick Guest Access**: Use band analysis features without registration
@@ -21,11 +21,12 @@ The platform supports the complete experimental workflow from sample management,
 
 | Feature | Description |
 |---------|-------------|
-| Multi-step Wizard | 4 steps guiding complete experimental workflow |
+| Left-Right Split Layout | Manage samples and data on the left, preview results in real-time on the right |
 | Batch Sample Management | Support batch adding samples and group management |
 | Control Group Setting | Auto-identify and manage experimental control groups |
 | Tree Directory Structure | Support multi-level directory organization of experimental data |
 | Recent Editing | Quick access to recently edited experiments |
+| Auto Save | Real-time auto-save of experiment data to prevent loss
 
 ## Image Processing
 
@@ -106,7 +107,6 @@ Client_Codeup/
 │   └── scripts/               # Script files
 ├── src/                        # Source code directory
 │   ├── components/            # Reusable components
-│   │   ├── ExpeOverview/     # Experiment overview component
 │   │   ├── Footer/           # Footer component
 │   │   ├── HeaderDropdown/   # Header dropdown menu
 │   │   ├── ImageEditor/      # Image editor core
@@ -116,6 +116,7 @@ Client_Codeup/
 │   │   │   │   ├── ConvertToGrayscaleTool.tsx  # Grayscale conversion
 │   │   │   │   ├── InvertTool.tsx              # Invert tool
 │   │   │   │   ├── MeasureTool.tsx             # Measure tool
+│   │   │   │   ├── MeasurementEditorForGuest.tsx  # Guest mode measurement
 │   │   │   │   ├── RemoveBackgroundTool.tsx    # Background removal
 │   │   │   │   └── MeasurementTable.tsx        # Measurement table
 │   │   │   ├── EditorCanvas.tsx       # Canvas component
@@ -123,6 +124,9 @@ Client_Codeup/
 │   │   └── RightContent/            # Right content area
 │   ├── constants/              # Constants definition
 │   │   └── chartSettings.ts    # Chart configuration constants
+│   ├── hooks/                  # Custom Hooks
+│   │   ├── useAutoCalculation.ts  # Auto-calculation hook
+│   │   └── useAutoSave.ts         # Auto-save hook
 │   ├── layouts/                # Layout components
 │   │   └── BasicLayout.tsx     # Basic layout
 │   ├── locales/               # Internationalization resources
@@ -135,14 +139,13 @@ Client_Codeup/
 │   │   └── toolModel.ts             # Tool model
 │   ├── pages/                  # Page components
 │   │   ├── main/              # Main page
-│   │   ├── newExperiment/     # New experiment page
+│   │   ├── newExperiment/     # New experiment page (left-right layout)
 │   │   │   ├── NewExpeSample/         # Sample management
-│   │   │   ├── NewExpeParameter/      # Parameter settings
-│   │   │   ├── NewExpeOriginalData/   # Raw data
-│   │   │   ├── NewExpeDataProcess/    # Data processing
+│   │   │   ├── NewExpeOriginalData/   # Raw data (upload/measure bands)
 │   │   │   ├── NewExpeCalculateDataTable/  # Calculate table
-│   │   │   └── NewExpeResult/         # Experiment result
-│   │   ├── GuestMode/         # Guest mode
+│   │   │   └── NewExpeResult/         # Experiment result & charts
+│   │   │       └── AlignmentSection.tsx  # Reference alignment component
+│   │   ├── GuestMode/         # Guest mode (quick analysis)
 │   │   ├── SingleExpe/        # Single experiment details
 │   │   └── user/              # User-related pages
 │   │       ├── login/         # Login page
@@ -204,7 +207,7 @@ Click the "Quick Version Without Login" button on the login page to use all anal
 
 - All data is stored locally in the browser
 - Data will not be retained after closing the browser
-- Suitable for quick verification or single analysis
+- Click "Use Demo Pic" to load sample images and experience the full workflow
 
 ## 2. Create New Experiment
 
@@ -212,34 +215,32 @@ Click the "Quick Version Without Login" button on the login page to use all anal
 
 After logging in, click the "New Experiment" button in the upper left of the main page, or right-click on the left directory tree and select "New Experiment". Experiments are saved in the root directory by default.
 
-### 2.2 Experiment Wizard Flow
+### 2.2 Experiment Page Layout
 
-The system uses a 4-step wizard design:
+The system uses a left-right split layout design. The left panel is the data management area, and the right panel is the result preview area:
 
 ```
-┌─────────────┐
-│  Step 1     │ ← Experiment Setup (basic info + sample setup)
-│  Setup      │
-└──────┬──────┘
-       ↓
-┌─────────────┐
-│  Step 2     │ ← Raw Data (upload WB images)
-│  Raw Data   │
-└──────┬──────┘
-       ↓
-┌─────────────┐
-│  Step 3     │ ← Data Processing (band measurement, calculation)
-│  Processing │
-└──────┬──────┘
-       ↓
-┌─────────────┐
-│  Step 4     │ ← Experiment Results (view charts, export)
-│  Results    │
-└─────────────┘
+┌─────────────────────────────────────────────────┐
+│  ┌────────── Left Panel ──────────┐ ┌─Right──┐ │
+│  │  Experiment Name / Save / Toolbar│ │        │ │
+│  │  ┌────────────────────────────┐│ │  Data  │ │
+│  │  │  Sample Management        ││ │  Table  │ │
+│  │  │  (sample table)           ││ │        │ │
+│  │  └────────────────────────────┘│ │  Charts │
+│  │  ┌────────────────────────────┐│ │        │ │
+│  │  │  Raw Data                 ││ │  Data  │ │
+│  │  │  (upload/measure bands)   ││ │Integrate│ │
+│  │  └────────────────────────────┘│ │        │ │
+│  └────────────────────────────────┘ └────────┘ │
+└─────────────────────────────────────────────────┘
 ```
 
+- **Left Panel**: Sample management, raw data upload/measurement modules, arranged vertically
+- **Right Panel**: Data tables, result charts, data integration (with reference alignment), arranged vertically
+- Right panel can be collapsed to give more space for the left panel
 
-## 3. Sample Management (Step 1)
+
+## 3. Sample Management
 
 ### 3.1 Add Samples
 
@@ -255,7 +256,7 @@ Click the "+ Add Row" button at the bottom of the table or use the batch add fea
 - **Important**: Each experiment must have **exactly one** control group
 - The system automatically marks the first sample as the control group
 - You can toggle other samples as the control group via the switch
-- Cannot proceed to the next step if no control group is set or multiple control groups are set
+- Unable to perform subsequent calculations if no control group is set or multiple control groups are set
 
 ### 3.4 Sample Grouping
 
@@ -267,11 +268,11 @@ Support grouping samples for easier data analysis:
 
 ---
 
-## 4. Raw Data Management (Step 2)
+## 4. Raw Data Management
 
 ### 4.1 Upload Images
 
-Click the dashed border area to upload Western Blot image files:
+Click the upload area in the table row or the batch upload button to upload Western Blot image files:
 
 | Supported Formats | Description |
 |-------------------|-------------|
@@ -308,7 +309,7 @@ In the image list:
 
 ---
 
-## 5. Data Processing (Step 3)
+## 5. Image Measurement & Data Processing
 
 ### 5.1 Grayscale Measurement
 
@@ -337,9 +338,11 @@ Click the "Process" button in the operation column to enter the measurement edit
    - Click the "Calculate Values" button
    - System calculates and displays measurement results
 
-4. **Confirm and Return**
+4. **Confirm and Save**
    - Review IntDen, Area, Mean, Min, Max values
-   - Click "Return" to save data
+   - Click "Confirm" to save data, automatically synced to the data table
+
+After measurement is complete, a green "Measured" status indicator will be displayed below the gene name.
 
 ### 5.2 Data Measurement Parameters
 
@@ -353,27 +356,30 @@ Click the "Process" button in the operation column to enter the measurement edit
 
 ### 5.3 Auto Calculation
 
-When reference processing is complete, click the "One-Click Calculate" button:
+The system automatically calculates when data is ready, no manual trigger needed:
 
 | Calculation Step | Description |
 |------------------|-------------|
 | Reference Normalization | sample_value / ref_gene_value |
 | Treatment Control | normalized_value / control_value |
 
+Calculation results are updated to the right panel data table and charts in real-time.
+
 ### 5.4 Data Export
 - After all image processing is complete, data will be processed into three tables: "Signal Intensity", "Reference Normalized", and "Final Results".
 - Click the "Export" button in the upper right corner of the table to export as xlsx format.
 
 ### 5.5 Reference Alignment
+- In the "Data Integration" panel, expand the "Reference Alignment" collapsible section
 - Select a reference sample, and the system will automatically align the volumes of other samples
 
 ---
 
-## 6. Experiment Results (Step 4)
+## 6. Experiment Results
 
 ### 6.1 Data View Switching
 
-Support three data views:
+The right panel "Data Table" supports tab switching between three data views:
 
 | View | Description |
 |------|-------------|
@@ -390,12 +396,13 @@ Support three data views:
 
 ### 6.3 Band Visualization
 
-In the "Data Integration" area at the bottom of the page:
+In the "Data Integration" panel on the right (collapsible):
 
 | Feature | Description |
 |---------|-------------|
 | Drag to Sort | Drag bands to adjust display order |
 | Parameter Adjustment | Adjust font, spacing and other parameters |
+| Screenshot Export | Export the integrated chart as an image |
 
 **Adjustable Parameters:**
 
