@@ -6,7 +6,7 @@ The platform supports the complete experimental workflow from sample management,
 
 ## Core Features
 
-- 🧪 **Complete Experimental Workflow**: Left-right split layout, manage samples and data on the left, view results and charts in real-time on the right
+- 🧪 **Complete Experimental Workflow**: Top-bottom 2×2 grid layout, manage samples (top-left), upload bands (top-right), data table (bottom-left), charts & integration (bottom-right)
 - 📊 **Professional Image Analysis**: Integrated multiple image processing tools including cropping, background removal, and inversion for precise band grayscale measurement
 - 📈 **Automated Data Calculation**: Real-time auto-calculation of reference normalization and treatment control calculations
 - 🎨 **Diverse Visualization**: Supports color/grayscale themes, generates publication-ready charts
@@ -21,7 +21,7 @@ The platform supports the complete experimental workflow from sample management,
 
 | Feature | Description |
 |---------|-------------|
-| Left-Right Split Layout | Manage samples and data on the left, preview results in real-time on the right |
+| Top-Bottom 2×2 Grid Layout | Top-left: sample management, top-right: band upload/measurement, bottom-left: data table, bottom-right: data integration & charts |
 | Batch Sample Management | Support batch adding samples and group management |
 | Control Group Setting | Auto-identify and manage experimental control groups |
 | Tree Directory Structure | Support multi-level directory organization of experimental data |
@@ -139,7 +139,7 @@ Client_Codeup/
 │   │   └── toolModel.ts             # Tool model
 │   ├── pages/                  # Page components
 │   │   ├── main/              # Main page
-│   │   ├── newExperiment/     # New experiment page (left-right layout)
+│   │   ├── newExperiment/     # New experiment page (top-bottom 2×2 grid)
 │   │   │   ├── NewExpeSample/         # Sample management
 │   │   │   ├── NewExpeOriginalData/   # Raw data (upload/measure bands)
 │   │   │   ├── NewExpeCalculateDataTable/  # Calculate table
@@ -217,27 +217,24 @@ After logging in, click the "New Experiment" button in the upper left of the mai
 
 ### 2.2 Experiment Page Layout
 
-The system uses a left-right split layout design. The left panel is the data management area, and the right panel is the result preview area:
+The system uses a top-bottom 2×2 grid layout. The upper half is for data management and collection, the lower half is for data review and integration:
 
 ```
-┌─────────────────────────────────────────────────┐
-│  ┌────────── Left Panel ──────────┐ ┌─Right──┐ │
-│  │  Experiment Name / Save / Toolbar│ │        │ │
-│  │  ┌────────────────────────────┐│ │  Data  │ │
-│  │  │  Sample Management        ││ │  Table  │ │
-│  │  │  (sample table)           ││ │        │ │
-│  │  └────────────────────────────┘│ │  Charts │
-│  │  ┌────────────────────────────┐│ │        │ │
-│  │  │  Raw Data                 ││ │  Data  │ │
-│  │  │  (upload/measure bands)   ││ │Integrate│ │
-│  │  └────────────────────────────┘│ │        │ │
-│  └────────────────────────────────┘ └────────┘ │
-└─────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│  Experiment Name / Save / Toolbar           │
+├─────────────────┬───────────────────────────┤
+│  Samples        │  Upload Bands             │
+│  (sample table) │  (upload/measure bands)   │
+├─────────────────┼───────────────────────────┤
+│  Data Table     │  Charts & Integration     │
+│  (data table)   │  (charts + ref alignment) │
+└─────────────────┴───────────────────────────┘
 ```
 
-- **Left Panel**: Sample management, raw data upload/measurement modules, arranged vertically
-- **Right Panel**: Data tables, result charts, data integration (with reference alignment), arranged vertically
-- Right panel can be collapsed to give more space for the left panel
+- **Top-left**: Sample management, including sample table, batch add, control group setting
+- **Top-right**: Raw data upload and measurement, supports image cropping, marking reference genes
+- **Bottom-left**: Data table with three view tabs (Signal Intensity, Reference Normalized, Final Results)
+- **Bottom-right**: Result charts and data integration (including reference alignment)
 
 
 ## 3. Sample Management
@@ -363,7 +360,7 @@ The system automatically calculates when data is ready, no manual trigger needed
 | Reference Normalization | sample_value / ref_gene_value |
 | Treatment Control | normalized_value / control_value |
 
-Calculation results are updated to the right panel data table and charts in real-time.
+Calculation results are updated to the bottom-left data table and bottom-right charts in real-time.
 
 ### 5.4 Data Export
 - After all image processing is complete, data will be processed into three tables: "Signal Intensity", "Reference Normalized", and "Final Results".
@@ -379,7 +376,7 @@ Calculation results are updated to the right panel data table and charts in real
 
 ### 6.1 Data View Switching
 
-The right panel "Data Table" supports tab switching between three data views:
+The bottom-left "Data Table" supports tab switching between three data views:
 
 | View | Description |
 |------|-------------|
@@ -396,7 +393,7 @@ The right panel "Data Table" supports tab switching between three data views:
 
 ### 6.3 Band Visualization
 
-In the "Data Integration" panel on the right (collapsible):
+In the "Data Integration" panel at the bottom-right (collapsible):
 
 | Feature | Description |
 |---------|-------------|
