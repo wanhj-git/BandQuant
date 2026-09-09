@@ -1,0 +1,2 @@
+"""Strip detector implementations."""
+
