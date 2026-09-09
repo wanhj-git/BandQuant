@@ -1,6 +1,5 @@
-# BandQuant (条带宝)
+# BandQuant
 
-**English** | [简体中文](./README.md)
 
 BandQuant is a web client for managing and quantitatively analyzing Western Blot and similar band-based experiments. The current application is organized around the workflow **experiment design → image processing → ROI quantification → derived calculations → method comparison → chart/collage export → persistence**, with an email-based account system and a no-login guest workflow.
 
