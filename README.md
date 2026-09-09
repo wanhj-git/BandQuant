@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="./public/icons/logo.png" alt="BandQuant Logo" width="260" />
-</p>
-
 <h1 align="center">BandQuant · 条带宝</h1>
 
 <p align="center">
