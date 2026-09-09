@@ -1,519 +1,347 @@
-# 📖 Introduction
+# BandQuant (条带宝)
 
-BandQuant is a Western Blot experiment data management platform developed based on the Ant Design Pro framework. It aims to provide life science researchers with comprehensive solutions for experimental data collection, processing, analysis, and visualization.
+**English** | [简体中文](./README.md)
 
-The platform supports the complete experimental workflow from sample management, image acquisition, grayscale measurement to data normalization calculations and chart generation. It also offers a guest mode for quick data analysis without registration.
+BandQuant is a web client for managing and quantitatively analyzing Western Blot and similar band-based experiments. The current application is organized around the workflow **experiment design → image processing → ROI quantification → derived calculations → method comparison → chart/collage export → persistence**, with an email-based account system and a no-login guest workflow.
 
-## Core Features
+> This repository contains the frontend application. Business APIs, image-processing services, and processed-image files are provided by the companion backend. During development, the frontend reaches that backend through the `/api/` and `/processed/` proxies.
 
-- 🧪 **Complete Experimental Workflow**: Top-bottom 2×2 grid layout, manage samples (top-left), upload bands (top-right), data table (bottom-left), charts & integration (bottom-right)
-- 📊 **Professional Image Analysis**: Integrated multiple image processing tools including cropping, background removal, and inversion for precise band grayscale measurement
-- 📈 **Automated Data Calculation**: Real-time auto-calculation of reference normalization and treatment control calculations
-- 🎨 **Diverse Visualization**: Supports color/grayscale themes, generates publication-ready charts
-- 🌍 **Internationalization**: Full Chinese and English language switching
-- 👤 **Quick Guest Access**: Use band analysis features without registration
+## Current capabilities
 
----
+| Area | Current implementation |
+| --- | --- | --- |
+| Experiment workspace | Samples, original band images, calculation tables, and results are composed into one experiment workspace |
+| Experiment design | Samples, sample groups, control sets, reference assignments, experiment purpose, and related structured metadata |
+| Image processing | Cropping, background subtraction, inversion, processing history/undo, and ROI annotation |
+| AI band detection | `/api/v2/strip-detections` detects ROIs and lets users add, delete, or reposition boxes before measurement |
+| Formal quantification | Rectangular ROIs are sent to `/api/measure-rectangles` and persist IntDen, Area, Mean, Min, Max, and related values |
+| Lane-profile comparison | A separate lane-profile v2 comparison method with polarity detection, peak-bound adjustment, peak area, and ROI-vs-lane comparison |
+| Derived calculations | Raw signal, reference-normalized values, and control-normalized values are maintained as separate calculation layers |
+| Result integration | Chart configuration, grouped statistics, reference alignment, band collage, and PNG/XLSX export capabilities |
+| Autosave | Experiment edits are debounced and save requests are serialized so newer state cannot be overwritten by an older request |
+| Accounts | Email verification registration, login, JWT authentication, and email-based password reset |
+| Guest mode | Upload/crop/process bands without an account, select reference/control values, inspect raw/fold-change results, and export charts/CSV |
+| Internationalization | `zh-CN` and `en-US`, with UI switching and `?locale=zh-CN | en-US` support |
 
-# ✨ Features
+## Architecture overview
 
-## Experiment Management
+```mermaid
+flowchart LR
+    Browser[Browser]
+    Router[Umi Routes + BasicLayout]
+    Pages[Pages / Feature Modules]
+    Model[Umi Model: ExpeDataModel]
+    Schema[ExperimentResultV2\nparse / hydrate / serialize]
+    AutoSave[useAutoSave]
+    Services[services/labnote]
+    Backend[Backend API]
+    Processed[/processed/ files]
 
-| Feature | Description |
-|---------|-------------|
-| Top-Bottom 2×2 Grid Layout | Top-left: sample management, top-right: band upload/measurement, bottom-left: data table, bottom-right: data integration & charts |
-| Batch Sample Management | Support batch adding samples and group management |
-| Control Group Setting | Auto-identify and manage experimental control groups |
-| Tree Directory Structure | Support multi-level directory organization of experimental data |
-| Recent Editing | Quick access to recently edited experiments |
-| Auto Save | Real-time auto-save of experiment data to prevent loss
-
-## Image Processing
-
-| Feature | Description |
-|---------|-------------|
-| Multi-format Support | Support PNG, JPG, TIFF and other common image formats |
-| Batch Upload | Support simultaneous upload of multiple files |
-| Image Cropping | Precisely crop region of interest (ROI) |
-| Background Removal | Remove background noise interference |
-| Invert Colors | Support image color inversion |
-| AI Auto-framing | Support AI automatic framing of calculation areas |
-
-## Data Analysis
-
-| Feature | Description |
-|---------|-------------|
-| Grayscale Measurement | Measure IntDen, Area, Mean, Min, Max values of bands |
-| Reference Normalization | Normalize based on reference genes (e.g., GAPDH, β-actin) |
-| Treatment Control Calculation | Calculate expression changes relative to control group |
-| Multi-chart Display | Independent charts + integrated charts dual view |
-| Reference Alignment | Specify reference sample, auto-calculate volume needed for other samples |
-
-## Data Export
-
-| Format | Description |
-|--------|-------------|
-| PNG | Export charts and collage images as PNG images |
-| XLSX | Export data tables as XLSX files |
-| TIFF | Raw image support for TIFF format |
-
----
-
-# 🛠 Tech Stack
-
-## Frontend Framework
-
-- **Core Framework**: React 18.2.0
-- **Build Tool**: UmiJS 4.1.0
-- **UI Component Library**: Ant Design 5.26.7
-- **Page Components**: Ant Design Pro Components 2.8.10
-
-## Image & Charts
-
-- **Canvas Processing**: Fabric.js 6.4.2
-- **Chart Library**: ECharts 5.6.0
-- **Image Export**: html2canvas
-- **TIFF Parsing**: tiff.js
-
-## Utilities
-
-- **HTTP Client**: Axios 1.7.7
-- **Date Processing**: dayjs 1.11.10
-- **Drag & Drop Sorting**: @dnd-kit/core
-- **Excel Processing**: xlsx 0.18.5
-- **Encryption**: jsencrypt
-
-## Development Tools
-
-- **Type Checking**: TypeScript 4.9.5
-- **Code Standards**: ESLint + Prettier
-- **Unit Testing**: Jest
-- **Mock Service**: MockJS
-
----
-
-# 📁 Project Structure
-
+    Browser --> Router --> Pages
+    Pages <--> Model
+    Model <--> Schema
+    Model --> AutoSave --> Services
+    Pages --> Services
+    Services -->|/api/*| Backend
+    Backend --> Processed
+    Processed --> Pages
 ```
+
+### Layer responsibilities
+
+- **Routing and application shell**: `config/routes.ts`, `src/layouts/BasicLayout.tsx`, and `src/app.tsx` define public/authenticated entry points, the main layout, language handling, and global request behavior.
+- **Pages and feature modules**: `src/pages/` contains experiment management, guest mode, account flows, and result views.
+- **Experiment editing state**: `src/models/ExpeDataModel.ts` is the primary in-memory state container while an experiment is being edited.
+- **Persistence contract**: `src/utils/experimentSchema.ts` owns experiment parsing, compatibility normalization, and serialization.
+- **Derived calculation and autosave**: `useAutoCalculation` derives tables while `useAutoSave` handles debounce and serialized persistence.
+- **API service layer**: `src/services/labnote/` separates authentication, experiment management, image processing, and strip detection from UI components.
+- **Algorithms and pure utilities**: `src/utils/` contains testable logic for experiment schemas, strip-detection contracts, lane profiles, chart configuration, image signatures, and export helpers.
+
+## Experiment data model
+
+Persistence is centered on `ExperimentResultV2`, with `schemaVersion` fixed at `2` for newly serialized experiment data.
+
+```text
+ExperimentResultV2
+├─ schemaVersion: 2
+├─ purpose
+├─ samples
+├─ parameters
+├─ originalDatas
+├─ sampleGroups
+├─ controlSets
+├─ referenceAssignments
+├─ baseTableData
+├─ normalizedTableData
+├─ controlTableData
+├─ result
+├─ stripeConfig
+├─ chartConfig
+└─ lastUpdate / compatibility fields
+```
+
+When an experiment is loaded, `parseExperimentResult()` normalizes the persisted payload before it is hydrated into `ExpeDataModel`. Saving goes through `serializeExperimentResult()` / `getSavePayload()` so page components do not build independent database JSON shapes.
+
+`parseExperimentResult()` keeps compatibility with supported historical data while protecting the client from unknown future schema versions. Lane-profile comparison data is versioned separately: the active implementation is `lane-profile-v2`; persisted `lane-profile-v1` data can be recognized for compatibility, but the result UI asks the user to re-analyze it before using the current comparison workflow.
+
+## Experiment workflow
+
+```mermaid
+flowchart TD
+    Create[Create or open experiment]
+    Sample[Samples / groups / controls / references]
+    Image[Upload band images]
+    Prep[Crop / background subtraction / inversion]
+    ROI[AI detection or manual ROI]
+    Measure[Formal rectangular-ROI measurement]
+    Calc[Raw → reference-normalized → control-normalized]
+    Lane[Optional lane-profile comparison]
+    Result[Charts / grouped statistics / collage / export]
+    Save[V2 schema autosave]
+
+    Create --> Sample --> Image --> Prep --> ROI --> Measure --> Calc --> Result --> Save
+    ROI --> Lane --> Result
+```
+
+### ROI-to-sample matching
+
+Rectangular ROIs are the source of formal quantification. The current interaction model enforces these rules:
+
+1. After AI detection, the selected-box count and total sample count remain visible even when they match.
+2. When there are fewer boxes than samples, the user can add a box; when there are too many, the user selects an existing box and deletes it.
+3. Switching to a new manual-drawing pass warns that existing results will be cleared and treats the newly drawn boxes as the new baseline.
+4. Formal measurement is blocked until the ROI count equals the sample count.
+5. Immediately before formal measurement, ROIs are sorted by their actual horizontal positions and re-matched to the left-to-right sample order.
+6. Changes to the ROI geometry, source image, or sample relationship invalidate measurements and lane-derived state that depended on the old geometry.
+
+### Rectangular ROI and lane profile are different methods
+
+- **Rectangular ROI** calls `/api/measure-rectangles` and is the source of the experiment's formal measurement values.
+- **Lane profile** is an optional method-comparison workflow; it does not silently replace formal rectangular-ROI results.
+- Lane-profile v2 persists sample order, a common lane width, peak bounds, peak area, band polarity, polarity confidence, and whether polarity was selected automatically or manually.
+- Lane overlays can be moved, their width can be resized uniformly, and peak integration bounds can be adjusted manually. Low-confidence polarity requires user confirmation.
+- The result view can reconstruct the profile and compare normalized ROI IntDen values with normalized lane peak areas.
+
+## Routes
+
+| Path                    | Purpose                                     | Login required |
+| ----------------------- | ------------------------------------------- | -------------- |
+| `/user/login`           | Login                                       | No             |
+| `/user/register`        | Email-verification registration             | No             |
+| `/user/forgot-password` | Email-code password reset                   | No             |
+| `/guest`                | Guest quick analysis                        | No             |
+| `/main`                 | Main page and experiment/folder entry point | Yes            |
+| `/recentlyEdited`       | Recently edited experiments                 | Yes            |
+| `/statistics`           | Statistics page                             | Yes            |
+| `/SingleExpe`           | Single-experiment entry                     | Yes            |
+| `/newExperiment`        | Experiment editing workspace                | Yes            |
+
+`/` redirects to `/main`; unmatched paths use the global 404 route.
+
+## Authentication and request flow
+
+The registration UI currently exposes an **email-only** registration flow: email → verification code → password/confirmation. The submitted payload uses the email as the account identifier and declares `registerType: 'email'`.
+
+After login, the JWT is stored in `localStorage.token`. The request interceptor in `src/app.tsx` automatically sends:
+
+```http
+Authorization: Bearer <token>
+```
+
+The application initializes the signed-in user through `GET /api/currentUser`. Password reset uses dedicated endpoints:
+
+- `POST /api/auth/password-reset/request`
+- `POST /api/auth/password-reset/confirm`
+
+A successful password reset clears the local token and returns the user to the login page.
+
+## API boundary
+
+Frontend API wrappers are concentrated in `src/services/labnote/`.
+
+### Experiments and folders
+
+- `GET /api/category_list`
+- `POST /api/create_experiment`
+- `POST /api/save_experiment`
+- `GET /api/one_experiment/:experimentId`
+- `GET /api/experiments/recent`
+- Experiment/folder rename, move, and delete endpoints
+
+### Image processing and quantification
+
+- `POST /api/subtract-background`
+- `POST /api/invert-colors`
+- `POST /api/measure-rectangles`
+- `POST /api/v2/strip-detections`
+
+Processed files generated by the backend are exposed to the frontend under `/processed/`.
+
+## Guest mode
+
+`/guest` does not require an account, but some image-processing operations still call backend APIs. The current guest workflow supports:
+
+- Uploading PNG/JPEG/TIFF-style images or loading bundled demo images;
+- Cropping and measurement;
+- Background processing;
+- Selecting a reference image and control sample;
+- Raw and fold-change result views;
+- Color and grayscale chart themes;
+- Showing original band images next to chart positions;
+- PNG chart download and CSV data export.
+
+Guest mode is intended for quick analysis. Durable experiment persistence, folder organization, and cross-session experiment management belong to the authenticated experiment workspace.
+
+## Technology stack
+
+| Category              | Main technologies                               |
+| --------------------- | ----------------------------------------------- |
+| UI                    | React 18.2, Ant Design 5.26, Pro Components 2.8 |
+| Application framework | Umi Max 4.7                                     |
+| Types                 | TypeScript 4.9                                  |
+| Canvas                | Fabric.js 6.4                                   |
+| Charts                | ECharts 5.6 / echarts-for-react                 |
+| Requests              | Umi Request / Axios                             |
+| Export                | xlsx, html2canvas, PNG helpers                  |
+| Images                | tiff.js plus backend image-processing APIs      |
+| Drag/drop             | dnd-kit                                         |
+| Testing               | Jest 29, Testing Library                        |
+| Code quality          | ESLint, Prettier, Husky                         |
+
+## Project structure
+
+```text
 Client_Codeup/
-├── config/                      # Configuration directory
-│   ├── config.ts               # Main configuration file
-│   ├── defaultSettings.ts      # Default layout settings
-│   ├── proxy.ts                # Proxy configuration
-│   └── routes.ts               # Route configuration
-├── mock/                       # Mock data directory
-├── public/                     # Static resources
-│   ├── icons/                 # Application icons
-│   └── scripts/               # Script files
-├── src/                        # Source code directory
-│   ├── components/            # Reusable components
-│   │   ├── Footer/           # Footer component
-│   │   ├── HeaderDropdown/   # Header dropdown menu
-│   │   ├── ImageEditor/      # Image editor core
-│   │   │   ├── CompositionEditor/    # Composition editor
-│   │   │   ├── CroppingEditor/       # Cropping editor
-│   │   │   ├── MeasurementEditor/    # Measurement editor
-│   │   │   │   ├── ConvertToGrayscaleTool.tsx  # Grayscale conversion
-│   │   │   │   ├── InvertTool.tsx              # Invert tool
-│   │   │   │   ├── MeasureTool.tsx             # Measure tool
-│   │   │   │   ├── MeasurementEditorForGuest.tsx  # Guest mode measurement
-│   │   │   │   ├── RemoveBackgroundTool.tsx    # Background removal
-│   │   │   │   └── MeasurementTable.tsx        # Measurement table
-│   │   │   ├── EditorCanvas.tsx       # Canvas component
-│   │   │   └── LogViewer.tsx          # Log viewer
-│   │   └── RightContent/            # Right content area
-│   ├── constants/              # Constants definition
-│   │   └── chartSettings.ts    # Chart configuration constants
-│   ├── hooks/                  # Custom Hooks
-│   │   ├── useAutoCalculation.ts  # Auto-calculation hook
-│   │   └── useAutoSave.ts         # Auto-save hook
-│   ├── layouts/                # Layout components
-│   │   └── BasicLayout.tsx     # Basic layout
-│   ├── locales/               # Internationalization resources
-│   │   ├── en-US/             # English resources
-│   │   └── zh-CN/             # Chinese resources
-│   ├── models/                # Global state management
-│   │   ├── CategoryExpeDataModel.ts  # Category experiment data model
-│   │   ├── CategoryModel.ts          # Category model
-│   │   ├── ExpeDataModel.ts          # Experiment data model
-│   │   └── toolModel.ts             # Tool model
-│   ├── pages/                  # Page components
-│   │   ├── main/              # Main page
-│   │   ├── newExperiment/     # New experiment page (top-bottom 2×2 grid)
-│   │   │   ├── NewExpeSample/         # Sample management
-│   │   │   ├── NewExpeOriginalData/   # Raw data (upload/measure bands)
-│   │   │   ├── NewExpeCalculateDataTable/  # Calculate table
-│   │   │   └── NewExpeResult/         # Experiment result & charts
-│   │   │       └── AlignmentSection.tsx  # Reference alignment component
-│   │   ├── GuestMode/         # Guest mode (quick analysis)
-│   │   ├── SingleExpe/        # Single experiment details
-│   │   └── user/              # User-related pages
-│   │       ├── login/         # Login page
-│   │       └── register/      # Register page
-│   ├── services/              # API service layer
-│   │   └── labnote/           # Lab note service
-│   │       └── mainLogic.ts   # Core business logic
-│   ├── types/                 # TypeScript type definitions
-│   │   └── expeDataInterface.ts  # Experiment data types
-│   ├── utils/                 # Utility functions
-│   │   ├── exportToExcel.ts   # Excel export
-│   │   └── utils.ts           # Common utilities
-│   ├── app.tsx                # Application entry
-│   └── global.tsx             # Global configuration
-├── tests/                     # Test files
-├── experimentTypes.json      # Experiment types configuration
-├── package.json              # Project dependencies
-└── tsconfig.json             # TypeScript configuration
+├─ config/
+│  ├─ config.ts             # Umi config, locale, request, build
+│  ├─ routes.ts             # Routing
+│  └─ proxy.ts              # Development proxies
+├─ public/                  # Static assets and demo images
+├─ src/
+│  ├─ components/
+│  │  └─ ImageEditor/       # Reusable canvas/cropping/measurement editors
+│  ├─ hooks/
+│  │  ├─ useAutoCalculation.ts
+│  │  └─ useAutoSave.ts
+│  ├─ layouts/BasicLayout.tsx
+│  ├─ locales/              # zh-CN / en-US
+│  ├─ models/
+│  │  └─ ExpeDataModel.ts   # Experiment editing state
+│  ├─ pages/
+│  │  ├─ newExperiment/     # Experiment workspace shell
+│  │  ├─ NewExpeSample/     # Samples, groups, controls
+│  │  ├─ NewExpeOriginalData/ # Images, ROIs, measurement, lane profile
+│  │  ├─ NewExpeCalculateDataTable/
+│  │  ├─ NewExpeResult/     # Charts, method comparison, collage, statistics
+│  │  ├─ GuestMode/
+│  │  └─ user/              # Login/registration/password reset
+│  ├─ services/labnote/     # Backend API boundary
+│  ├─ utils/                # Schemas, algorithms, exports, pure utilities
+│  └─ app.tsx               # initialState, JWT interceptor, runtime layout
+├─ types/expeDataInterface.ts
+├─ tests/
+├─ package.json
+├─ README.md
+└─ README_en.md
 ```
 
+## Local development
 
-# 📖 User Guide
+### 1. Install dependencies
 
-## 1. User Login and Registration
-
-### 1.1 User Registration
-Visit registration page: https://www.tiaodaibao.com/user/register
-
-#### 1.1.1 Username & Password Registration
-
-| Field | Description | Required |
-|-------|-------------|----------|
-| Username | Login account | ✅ |
-| Password | Account password | ✅ |
-| Email | Receive verification email | ❌ |
-| Phone Number | Contact information | ❌ |
-
-#### 1.1.2 Email Registration
-
-| Field | Description | Required |
-|-------|-------------|----------|
-| Email Address | Email address for registration | ✅ |
-| Email Verification Code | Verification code received in email | ✅ |
-| Password | Account password | ✅ |
-| Confirm Password | Re-enter password | ✅ |
-
-### 1.2 User Login
-
-Log in using your registered username and password or email. After login, you can access full features:
-
-- Create and manage experiments
-- Upload and process images
-- Export analysis results
-- Directory structure management
-
-### 1.3 Guest Mode
-
-Click the "Quick Version Without Login" button on the login page to use all analysis features without registration. In guest mode:
-
-- All data is stored locally in the browser
-- Data will not be retained after closing the browser
-- Click "Use Demo Pic" to load sample images and experience the full workflow
-
-## 2. Create New Experiment
-
-### 2.1 Access
-
-After logging in, click the "New Experiment" button in the upper left of the main page, or right-click on the left directory tree and select "New Experiment". Experiments are saved in the root directory by default.
-
-### 2.2 Experiment Page Layout
-
-The system uses a top-bottom 2×2 grid layout. The upper half is for data management and collection, the lower half is for data review and integration:
-
-```
-┌─────────────────────────────────────────────┐
-│  Experiment Name / Save / Toolbar           │
-├─────────────────┬───────────────────────────┤
-│  Samples        │  Upload Bands             │
-│  (sample table) │  (upload/measure bands)   │
-├─────────────────┼───────────────────────────┤
-│  Data Table     │  Charts & Integration     │
-│  (data table)   │  (charts + ref alignment) │
-└─────────────────┴───────────────────────────┘
+```bash
+npm install
 ```
 
-- **Top-left**: Sample management, including sample table, batch add, control group setting
-- **Top-right**: Raw data upload and measurement, supports image cropping, marking reference genes
-- **Bottom-left**: Data table with three view tabs (Signal Intensity, Reference Normalized, Final Results)
-- **Bottom-right**: Result charts and data integration (including reference alignment)
+### 2. Configure the backend target
 
+The development proxy prefers `PROXY_TARGET`. A convenient setup is a root-level `.env.dev` file:
 
-## 3. Sample Management
+```dotenv
+PROXY_TARGET=http://127.0.0.1:3300
+```
 
-### 3.1 Add Samples
+You can also set the environment variable before starting. PowerShell example:
 
-Click the "+ Add Row" button at the bottom of the table or use the batch add feature:
+```powershell
+$env:PROXY_TARGET = 'http://127.0.0.1:3300'
+npm run dev
+```
 
-| Operation | Description |
-|-----------|-------------|
-| Single Add | Add sample information one by one |
-| Batch Add | Set quantity and add multiple at once |
+`config/proxy.ts` forwards both `/api/` and `/processed/` to that target.
 
-### 3.2 Control Group Setting
+### 3. Start the frontend
 
-- **Important**: Each experiment must have **exactly one** control group
-- The system automatically marks the first sample as the control group
-- You can toggle other samples as the control group via the switch
-- Unable to perform subsequent calculations if no control group is set or multiple control groups are set
+```bash
+npm run dev
+```
 
-### 3.4 Sample Grouping
+Other commonly used equivalents include:
 
-Support grouping samples for easier data analysis:
+```bash
+npm start
+npm run start:no-mock
+```
 
-- Samples in the same group are displayed together
-- Group information is preserved in the experiment record
-- Support cross-group comparative analysis
+When no explicit development port is configured, the Umi development server uses its framework default.
 
----
+## Common scripts
 
-## 4. Raw Data Management
+| Command                 | Purpose                                            |
+| ----------------------- | -------------------------------------------------- |
+| `npm run dev`           | Development mode, Mock disabled, dev proxy enabled |
+| `npm run build`         | Build production static assets                     |
+| `npm run preview`       | Build and preview on port 8000                     |
+| `npm test`              | Run Jest                                           |
+| `npm run test:coverage` | Run coverage                                       |
+| `npm run lint`          | ESLint + Prettier checks                           |
+| `npm run lint:fix`      | ESLint auto-fix                                    |
+| `npm run tsc`           | TypeScript `--noEmit` check                        |
+| `npm run analyze`       | Analyze the production bundle                      |
 
-### 4.1 Upload Images
+The repository contains component tests, Node-level pure-function tests, and regression tests. Changes to ROI behavior, experiment schemas, autosave, or lane-profile logic should run the corresponding focused tests before broader related regression coverage.
 
-Click the upload area in the table row or the batch upload button to upload Western Blot image files:
+## Internationalization
 
-| Supported Formats | Description |
-|-------------------|-------------|
-| PNG | Portable Network Graphics |
-| JPG/JPEG | Joint Photographic Experts Group |
-| TIFF/TIF | Tagged Image File Format (multi-page support) |
+Chinese is the configured default language and browser language does not override it automatically. The application supports:
 
-### 4.2 Batch Upload
+```text
+?locale=zh-CN
+?locale=en-US
+```
 
-Support uploading multiple image files simultaneously:
+The URL parameter is copied to `localStorage('umi_locale')` and then removed from the address bar. New user-facing text should be added to both `src/locales/zh-CN.ts` and `src/locales/en-US.ts` (plus any applicable module locale files).
 
-1. Click the upload area
-2. Hold Ctrl/Cmd to select multiple files in the file dialog
-3. Click confirm to upload
+## Build and deployment
 
-### 4.3 Image Cropping
+```bash
+npm run build
+```
 
-If cropping is needed after upload:
+Static output is written to `dist/`. A critical deployment detail is that the **Umi development proxy does not exist in production**. The production Web server or gateway must route:
 
-1. Click the "Crop" button in the operation column
-2. Drag to select the area in the crop editor
-3. Click "Confirm" to save the crop result
+```text
+/api/*
+/processed/*
+```
 
-### 4.4 Mark Reference Genes
+to the companion backend. Otherwise the static frontend can load while authentication, experiment persistence, and image processing fail.
 
-In the image list:
+The frontend uses `publicPath: '/'` and hashed asset filenames. The deployment must also provide SPA history fallback to `index.html`.
 
-| Operation | Description |
-|-----------|-------------|
-| Enable Reference Switch | Mark this gene as a reference (e.g., GAPDH, β-actin) |
-| Gene Name | Recognize from filename or manually edit |
+## Architecture invariants for future changes
 
-**Important**: References are used for subsequent data normalization calculations, make sure to mark them correctly.
+- Keep experiment persistence behind the `ExperimentResultV2` parse/serialize boundary instead of introducing page-specific JSON formats.
+- When adding experiment fields, define historical hydrate behavior, defaults, and future-schema protection at the same time.
+- Changes to an ROI or its source image must invalidate measurements and lane-profile comparisons that depended on the previous geometry.
+- Lane-profile output is comparison data and must not silently overwrite formal rectangular-ROI results.
+- Before committing asynchronous image-processing or detection responses, verify that the current source/ROI/sample context is still the one that initiated the request.
+- Keep user-facing states/errors aligned across Chinese and English and add focused regression coverage for behavior changes.
 
----
+## Major upstream projects
 
-## 5. Image Measurement & Data Processing
-
-### 5.1 Grayscale Measurement
-
-Click the "Process" button in the operation column to enter the measurement editor:
-
-**Tool Panel Description:**
-
-| Tool | Function | Use Case |
-|------|----------|----------|
-| Background Removal | Remove background noise | When band background is uneven |
-| Invert Colors | Invert image colors | When original colors are opposite to expected |
-| Measure Tool | Measure band grayscale values | Extract band signal intensity |
-
-**Measurement Process:**
-
-1. **Preprocess Image** (if needed)
-   - Use tools like background removal, color inversion to preprocess the image
-
-2. **Draw Measurement Rectangles**
-   - Drag on the image to draw rectangle boxes
-   - Each rectangle box corresponds to one sample lane
-   - The number of rectangles should match the number of samples
-   - You can also click "Auto-framing" button to let AI automatically identify rectangles
-
-3. **Extract Data**
-   - Click the "Calculate Values" button
-   - System calculates and displays measurement results
-
-4. **Confirm and Save**
-   - Review IntDen, Area, Mean, Min, Max values
-   - Click "Confirm" to save data, automatically synced to the data table
-
-After measurement is complete, a green "Measured" status indicator will be displayed below the gene name.
-
-### 5.2 Data Measurement Parameters
-
-| Parameter | Description | Unit |
-|-----------|-------------|------|
-| IntDen | Integrated optical density value, representing total band intensity | - |
-| Area | Band coverage area | pixels |
-| Mean | Band average grayscale value | - |
-| Min | Band minimum grayscale value | - |
-| Max | Band maximum grayscale value | - |
-
-### 5.3 Auto Calculation
-
-The system automatically calculates when data is ready, no manual trigger needed:
-
-| Calculation Step | Description |
-|------------------|-------------|
-| Reference Normalization | sample_value / ref_gene_value |
-| Treatment Control | normalized_value / control_value |
-
-Calculation results are updated to the bottom-left data table and bottom-right charts in real-time.
-
-### 5.4 Data Export
-- After all image processing is complete, data will be processed into three tables: "Signal Intensity", "Reference Normalized", and "Final Results".
-- Click the "Export" button in the upper right corner of the table to export as xlsx format.
-
-### 5.5 Reference Alignment
-- In the "Data Integration" panel, expand the "Reference Alignment" collapsible section
-- Select a reference sample, and the system will automatically align the volumes of other samples
-
----
-
-## 6. Experiment Results
-
-### 6.1 Data View Switching
-
-The bottom-left "Data Table" supports tab switching between three data views:
-
-| View | Description |
-|------|-------------|
-| Signal Intensity | Shows raw grayscale values of bands |
-| Reference Normalized | Shows reference-normalized values |
-| Final Results | Shows expression changes relative to control group |
-
-### 6.2 Chart Theme
-
-| Theme | Description | Applicable Scenario |
-|-------|-------------|---------------------|
-| Color | Use multiple colors to distinguish samples | Presentations and general reports |
-| Grayscale | Use grayscale scale to distinguish samples | Publication |
-
-### 6.3 Band Visualization
-
-In the "Data Integration" panel at the bottom-right (collapsible):
-
-| Feature | Description |
-|---------|-------------|
-| Drag to Sort | Drag bands to adjust display order |
-| Parameter Adjustment | Adjust font, spacing and other parameters |
-| Screenshot Export | Export the integrated chart as an image |
-
-**Adjustable Parameters:**
-
-| Parameter | Description | Range |
-|-----------|-------------|-------|
-| Gene Font Size | Display font size of band names | 12-32px |
-| Image Spacing | Spacing between band images | -30~50px |
-| Sample Font Size | Display font size of sample labels | 10-24px |
-| Sample Spacing | Spacing between sample labels | 20-120px |
-| Label Offset | Horizontal offset of sample labels | 0-80px |
-
-### 6.4 Export Functions
-
-| Export Type | Operation | Format |
-|-------------|-----------|--------|
-| Chart Export | Click save button in the upper right corner of the chart | PNG |
-| Collage Export | Click "Save Collage Image" button | PNG |
-
----
-
-# 📊 Parameter Description
-
-## Sample Parameters
-
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| isControl | boolean | Whether this is a control group sample | false |
-| content | string | Sample name/number | empty |
-| samplegroup | string | Sample group | empty |
-| volume | number | Loading volume (μL) | empty |
-| well | number | Well position number | auto |
-
-## Image Processing Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| imageUrl | string | Image DataURL or URL |
-| geneName | string | Corresponding gene name |
-| isRef | boolean | Whether it is a reference gene |
-
----
-
-# 🔌 API Interfaces
-
-## Experiment Management
-
-| Interface | Method | Description |
-|-----------|--------|-------------|
-| `/api/create_experiment` | POST | Create new experiment |
-| `/api/save_experiment` | POST | Save experiment data |
-| `/api/rename_experiment` | POST | Rename experiment |
-| `/api/delete_experiment` | POST | Delete experiment |
-| `/api/move_experiment` | POST | Move experiment |
-
-## Directory Management
-
-| Interface | Method | Description |
-|-----------|--------|-------------|
-| `/api/create_folder` | POST | Create directory |
-| `/api/rename_folder` | POST | Rename directory |
-| `/api/delete_folder` | POST | Delete directory |
-| `/api/move_folder` | POST | Move directory |
-
-## User Related
-
-| Interface | Method | Description |
-|-----------|--------|-------------|
-| `/api/register` | POST | User registration |
-| `/api/send-email-code` | POST | Send email verification code |
-| `/api/save_settings` | POST | Save user settings |
-
-## Data Query
-
-| Interface | Method | Description |
-|-----------|--------|-------------|
-| `/api/category_list` | GET | Query user's directory structure and included experiments |
-| `/api/experiments_list` | GET | Paginated query of all experiment data under a folder |
-| `/api/one_experiment/${param0}` | GET | Query experiment data, return complete experiment data by ID |
-| `/api/experiments/recent` | GET | Query 6 most recently edited experiments |
-
----
-
-# ❓ FAQ
-
-## Q1: Uploaded TIFF files cannot be displayed?
-
-**A**: Please ensure the TIFF file format is correct. Some TIFF files generated by scanners may contain special encoding. If you encounter problems, please convert TIFF to PNG format before uploading.
-
-## Q2: Rectangle position is inaccurate during measurement?
-
-**A**: On the existing basis, you can select a single rectangle box to adjust its position.
-
-## Q3: Reference normalization calculation failed?
-
-**A**: Please confirm the following conditions:
-1. Reference genes are correctly marked
-2. Reference images are processed and data is extracted
-3. Sample data is complete without missing values
-
-## Q4: How to change language to Chinese?
-
-**A**: Click the language switch button in the upper right corner of the page to switch between Chinese and English.
-
----
-
-# 📄 License
-
-This project is open source under the MIT License.
-
----
-
-# 🙏 Acknowledgments
-
-- [Ant Design Pro](https://pro.ant.design) - Enterprise-level middle platform frontend/design solution
-- [UmiJS](https://umijs.org/) - Scalable enterprise-level frontend application framework
-- [ECharts](https://echarts.apache.org/) - Data visualization chart library
-- [Fabric.js](http://fabricjs.com/) - Flexible and powerful Canvas library
+- [Ant Design](https://ant.design/)
+- [Ant Design Pro Components](https://procomponents.ant.design/)
+- [UmiJS](https://umijs.org/)
+- [Fabric.js](https://fabricjs.com/)
+- [Apache ECharts](https://echarts.apache.org/)
